@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { SignedIn } from "@clerk/nextjs";
+import { SignedOut, SignedIn, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 
 import { navLinks } from "@/constants";
+import { Button } from "../ui/button";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -22,7 +23,7 @@ const Sidebar = () => {
           />
         </Link>
 
-        <nav>
+        <nav className="sidebar-nav">
           <SignedIn>
             <ul className="sidebar-nav_elements">
               {navLinks.map((link) => {
@@ -50,8 +51,18 @@ const Sidebar = () => {
                   </li>
                 );
               })}
+
+              <li className="flex-center cursor-pointer gap-2 p-4">
+                <UserButton afterSignOutUrl="/" showName />
+              </li>
             </ul>
           </SignedIn>
+
+          <SignedOut>
+            <Button asChild className="button bg-purple-gradient bg-cover">
+              <Link href="/sign-in">Login</Link>
+            </Button>
+          </SignedOut>
         </nav>
       </div>
     </aside>
