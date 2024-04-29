@@ -171,26 +171,6 @@ const TransformationForm = ({
     return onChangeField(value);
   };
 
-  // const onInputChangeHandler = (
-  //   fieldName: string,
-  //   value: string,
-  //   type: string,
-  //   onChangeField: (value: string) => void
-  // ) => {
-  //   debounce(() => {
-  //     setNewTransformation((prevState: any) => ({
-  //       ...prevState,
-  //       [type]: {
-  //         ...prevState?.[type],
-  //         [fieldName === "prompt" ? "prompt" : "to"]: value,
-  //       },
-  //     }));
-
-  //     return onChangeField(value);
-  //   }, 1000);
-  // };
-
-  // Adrian's variant
   const onInputChangeHandler = (
     fieldName: string,
     value: string,
@@ -253,6 +233,7 @@ const TransformationForm = ({
                 onValueChange={(value) =>
                   onSelectFieldHandler(value, field.onChange)
                 }
+                value={field.value}
               >
                 <SelectTrigger className="select-field">
                   <SelectValue placeholder="Select size" />
