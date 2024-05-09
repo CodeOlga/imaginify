@@ -6,6 +6,7 @@ import { handleError } from "../utils";
 import User from "../database/models/user.model";
 import Image from "../database/models/image.model";
 import { redirect } from "next/navigation";
+
 import { v2 as cloudinary } from "cloudinary";
 
 const populateUser = (query: any) =>
@@ -84,9 +85,7 @@ export async function getImageById(imageId: string) {
 
     const image = await populateUser(Image.findById(imageId));
 
-    if (!image) {
-      throw new Error("Image not found");
-    }
+    if (!image) throw new Error("Image not found");
 
     return JSON.parse(JSON.stringify(image));
   } catch (error) {
@@ -114,7 +113,7 @@ export async function getAllImages({
       secure: true,
     });
 
-    let expression = "folder=imaginify"; // exactly name like in Cloudinary account
+    let expression = "folder=imaginify";
 
     if (searchQuery) {
       expression += ` AND ${searchQuery}`;
@@ -139,7 +138,7 @@ export async function getAllImages({
     const skipAmount = (Number(page) - 1) * limit;
 
     const images = await populateUser(Image.find(query))
-      .sort({ updateAt: -1 })
+      .sort({ updatedAt: -1 })
       .skip(skipAmount)
       .limit(limit);
 
@@ -150,6 +149,37 @@ export async function getAllImages({
       data: JSON.parse(JSON.stringify(images)),
       totalPage: Math.ceil(totalImages / limit),
       savedImages,
+    };
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+// GET IMAGES BY USER
+export async function getUserImages({
+  limit = 9,
+  page = 1,
+  userId,
+}: {
+  limit?: number;
+  page: number;
+  userId: string;
+}) {
+  try {
+    await connectToDatabase();
+
+    const skipAmount = (Number(page) - 1) * limit;
+
+    const images = await populateUser(Image.find({ author: userId }))
+      .sort({ updatedAt: -1 })
+      .skip(skipAmount)
+      .limit(limit);
+
+    const totalImages = await Image.find({ author: userId }).countDocuments();
+
+    return {
+      data: JSON.parse(JSON.stringify(images)),
+      totalPages: Math.ceil(totalImages / limit),
     };
   } catch (error) {
     handleError(error);
